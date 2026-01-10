@@ -17,8 +17,11 @@ const pool = new Pool({
     }
 });
 
+// Garante que a pasta uploads existe antes de tentar salvar
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
 const upload = multer({ dest: 'uploads/' });
-
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));

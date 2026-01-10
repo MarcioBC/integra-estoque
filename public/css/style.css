@@ -109,3 +109,108 @@ body {
 .upload-screen input {
     margin: 20px 0;
 }
+
+/* --- ESTILOS DO MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none; /* Escondido por padrão */
+    justify-content: center;
+    align-items: flex-end; /* No celular, legal abrir de baixo, ou center */
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    height: 80vh; /* Ocupa 80% da altura */
+    border-radius: 20px 20px 0 0; /* Arredonda só em cima */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    animation: slideUpModal 0.3s ease-out;
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.modal-header h4 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.close-btn {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+}
+
+.lista-items {
+    overflow-y: auto; /* Permite rolar a lista */
+    flex: 1;
+}
+
+.carro-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.carro-item:active {
+    background: #f8fafc;
+}
+
+.carro-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.carro-modelo {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--primary-color);
+}
+
+.carro-detalhe {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 2px;
+}
+
+.carro-valor {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--success-color);
+}
+
+/* Ajuste para desktop ficar centralizado */
+@media (min-width: 500px) {
+    .modal-overlay { align-items: center; }
+    .modal-content { 
+        height: auto; 
+        max-height: 80vh; 
+        border-radius: 16px; 
+    }
+}

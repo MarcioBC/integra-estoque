@@ -1,0 +1,111 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding-top: 20px;
+}
+
+.container {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 1px solid #000; /* Borda preta conforme desenho */
+    min-height: 500px;
+}
+
+.app-header {
+    margin-bottom: 30px;
+}
+
+.app-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.app-header p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.search-section label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.search-section input {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    border: 3px solid #000; /* Borda grossa no input conforme desenho */
+    box-sizing: border-box;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.search-section button {
+    background: #000;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Estilo do Cartão de Resultado */
+.result-card {
+    border: 1px solid #333;
+    border-radius: 15px; /* Bordas arredondadas do card interno */
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field.right {
+    text-align: right;
+    align-items: flex-end;
+}
+
+.label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+}
+
+.price {
+    color: #2e7d32;
+    font-size: 18px;
+}
+
+/* Tela de Upload */
+.upload-screen {
+    text-align: center;
+    padding-top: 50px;
+}
+.upload-screen input {
+    margin: 20px 0;
+}

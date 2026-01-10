@@ -3,25 +3,24 @@ const express = require('express');
 const multer = require('multer');
 const xlsx = require('xlsx');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const { Pool } = require('pg'); // Cliente oficial do Postgres
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuração da Conexão com o Neon
+// Configuração do Banco de Dados (Neon)
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
-        rejectUnauthorized: false // Necessário para conexão segura com Neon
+        rejectUnauthorized: false
     }
 });
 
-// Garante que a pasta uploads existe antes de tentar salvar
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
-}
-const upload = multer({ dest: 'uploads/' });
+// MUDANÇA IMPORTANTE: Usar Memória ao invés de Disco
+// Isso evita o erro de "pasta não encontrada" no Render
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,43 +29,40 @@ app.use(bodyParser.json());
 // Rota Principal
 app.get('/', async (req, res) => {
     try {
-        // Busca se existe algum veículo cadastrado
-        // LIMIT 1 é só para checar se tem dados rápido
         const result = await pool.query('SELECT 1 FROM veiculos LIMIT 1');
         const temDados = result.rowCount > 0;
-        
         res.render('index', { dadosCarregados: temDados });
     } catch (error) {
         console.error("Erro ao conectar no Neon:", error);
+        // Se der erro de conexão, renderiza a página mas assume que não tem dados
         res.render('index', { dadosCarregados: false });
     }
 });
 
-// Rota de Upload (Com Transação para segurança)
+// Rota de Upload
 app.post('/upload', upload.single('planilha'), async (req, res) => {
     if (!req.file) return res.redirect('/');
 
-    const client = await pool.connect(); // Pega uma conexão do pool
+    const client = await pool.connect();
 
     try {
-        const workbook = xlsx.readFile(req.file.path);
+        // LEITURA DO ARQUIVO DIRETO DA MEMÓRIA (BUFFER)
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+        
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const dadosBrutos = xlsx.utils.sheet_to_json(sheet);
 
-        // Inicia uma Transação (Ou grava tudo ou não grava nada)
         await client.query('BEGIN');
 
-        // 1. Limpa o banco antigo
+        // Limpa o banco antigo
         await client.query('DELETE FROM veiculos');
 
-        // 2. Insere os novos dados
         const insertQuery = `
             INSERT INTO veiculos (placa, marca, modelo, ano, cor, km, portas, loja, valor)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `;
 
         for (const item of dadosBrutos) {
-            // Tratamento de dados igual fizemos antes
             let valorLimpo = 0;
             if (item['Venda']) {
                 let v = item['Venda'].toString().replace('R$', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.');
@@ -89,22 +85,16 @@ app.post('/upload', upload.single('planilha'), async (req, res) => {
             await client.query(insertQuery, valores);
         }
 
-        // Confirma a gravação (Commit)
         await client.query('COMMIT');
-        
-        console.log(`Sucesso! ${dadosBrutos.length} veículos importados para o Neon.`);
-        
-        // Remove arquivo temporário
-        fs.unlinkSync(req.file.path);
+        console.log(`Sucesso! ${dadosBrutos.length} veículos importados.`);
         res.redirect('/');
 
     } catch (error) {
-        // Se der erro, desfaz tudo (Rollback)
         await client.query('ROLLBACK');
-        console.error("Erro no processamento:", error);
-        res.send("Erro ao processar arquivo. Tente novamente.");
+        console.error("Erro CRÍTICO no upload:", error); // Isso vai aparecer nos Logs do Render
+        res.status(500).send("Erro ao processar arquivo. Verifique se a planilha está correta.");
     } finally {
-        client.release(); // Libera a conexão
+        client.release();
     }
 });
 
@@ -114,10 +104,9 @@ app.post('/buscar', async (req, res) => {
     
     try {
         const result = await pool.query('SELECT * FROM veiculos WHERE placa = $1', [placaBuscada]);
-        const data = result.rows[0]; // Pega o primeiro resultado
+        const data = result.rows[0];
 
         if (data) {
-            // Formata para o Front-end
             const veiculoFormatado = {
                 Marca: data.marca,
                 Modelo: data.modelo,
@@ -138,7 +127,6 @@ app.post('/buscar', async (req, res) => {
     }
 });
 
-// Rota Reset
 app.get('/reset', async (req, res) => {
     try {
         await pool.query('DELETE FROM veiculos');

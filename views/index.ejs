@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Integre Estoque | Marcio</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -17,11 +18,22 @@
                     <h3>Bom dia, Marcio</h3>
                     <p>Carregue a planilha para abrir a loja.</p>
                 </div>
+                
                 <form action="/upload" method="POST" enctype="multipart/form-data">
-                    <div class="upload-box">
-                        <input type="file" name="planilha" accept=".xlsx, .xls" required>
+                    
+                    <div class="upload-area">
+                        <label for="fileInput" class="custom-file-upload">
+                            <span class="icon-folder">📂</span>
+                            <span class="text-upload">Toque para escolher o arquivo</span>
+                        </label>
+                        <input type="file" id="fileInput" name="planilha" accept=".xlsx, .xls" required onchange="mostrarNomeArquivo()">
+                        
+                        <p id="nomeArquivo" class="file-name-display">Nenhum arquivo selecionado</p>
                     </div>
-                    <button type="submit" class="btn-main">Carregar Estoque</button>
+
+                    <button type="submit" class="btn-main" id="btnCarregar">
+                        ABRIR LOJA 🚀
+                    </button>
                 </form>
             </div>
         <% } else { %>
@@ -34,25 +46,47 @@
 
             <div class="search-section">
                 <label>Placa ou Modelo (ex: Onix)</label>
-                <input type="text" id="inputBusca" placeholder="Digite aqui..." onkeyup="if(event.key === 'Enter') realizarBusca()">
-                <button onclick="realizarBusca()" class="btn-main" style="margin-top: 15px;">BUSCAR</button>
+                <input type="text" id="inputBusca" placeholder="DIGITE AQUI..." onkeyup="if(event.key === 'Enter') realizarBusca()">
+                <button onclick="realizarBusca()" class="btn-main">BUSCAR</button>
             </div>
 
             <div id="areaResultado" style="display: none;">
                 <div class="result-title">Ficha do Veículo</div>
+
                 <div class="result-card">
                     <div class="row">
-                        <div class="field"><span class="label">Marca</span><span class="value" id="resMarca">--</span></div>
-                        <div class="field right"><span class="label">Modelo</span><span class="value" id="resModelo">--</span></div>
+                        <div class="field">
+                            <span class="label">Marca</span>
+                            <span class="value" id="resMarca">--</span>
+                        </div>
+                        <div class="field right">
+                            <span class="label">Modelo</span>
+                            <span class="value" id="resModelo">--</span>
+                        </div>
                     </div>
+
                     <div class="row">
-                        <div class="field"><span class="label">Ano</span><span class="value" id="resAno">--</span></div>
-                        <div class="field right"><span class="label">Cor</span><span class="value" id="resCor">--</span></div>
+                        <div class="field">
+                            <span class="label">Ano</span>
+                            <span class="value" id="resAno">--</span>
+                        </div>
+                        <div class="field right">
+                            <span class="label">Cor</span>
+                            <span class="value" id="resCor">--</span>
+                        </div>
                     </div>
+
                     <div class="row">
-                        <div class="field"><span class="label">Quilometragem</span><span class="value" id="resKm">--</span></div>
-                        <div class="field right"><span class="label">Portas</span><span class="value" id="resPortas">--</span></div>
+                        <div class="field">
+                            <span class="label">Quilometragem</span>
+                            <span class="value" id="resKm">--</span>
+                        </div>
+                        <div class="field right">
+                            <span class="label">Portas</span>
+                            <span class="value" id="resPortas">--</span>
+                        </div>
                     </div>
+
                     <div class="row" style="align-items: center; margin-top: 10px;">
                         <div class="field">
                             <span class="label">Localização</span>
@@ -63,8 +97,9 @@
                             <span class="value" id="resPlaca" style="font-size: 12px; color:#999;">--</span>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 20px; border: none;">
-                        <div class="field" style="width: 100%; text-align: center;">
+
+                    <div class="row highlight-row">
+                        <div class="field full-center">
                             <span class="label">Valor de Venda</span>
                             <span class="value highlight" id="resValor">--</span>
                         </div>
@@ -72,7 +107,7 @@
                 </div>
             </div>
 
-            <p id="msgErro" style="display: none; margin-top: 20px; color: red; text-align: center;">Nenhum veículo encontrado.</p>
+            <p id="msgErro" class="error-msg" style="display: none;">Nenhum veículo encontrado.</p>
 
         <% } %>
     </div>
@@ -89,12 +124,27 @@
     </div>
 
     <script>
+        // Atualiza o texto quando escolhe o arquivo
+        function mostrarNomeArquivo() {
+            const input = document.getElementById('fileInput');
+            const label = document.getElementById('nomeArquivo');
+            if (input.files.length > 0) {
+                label.innerText = "Arquivo: " + input.files[0].name;
+                label.classList.add('selected');
+            } else {
+                label.innerText = "Nenhum arquivo selecionado";
+                label.classList.remove('selected');
+            }
+        }
+
+        // Faz a busca no servidor
         async function realizarBusca() {
             const input = document.getElementById('inputBusca');
             const termo = input.value;
-            if(termo.length < 2) return;
+            
+            if(termo.length < 2) return; // Mínimo 2 letras
 
-            // Limpa telas anteriores
+            // Reseta visual
             document.getElementById('areaResultado').style.display = 'none';
             document.getElementById('msgErro').style.display = 'none';
 
@@ -108,26 +158,26 @@
                 const resposta = await response.json();
 
                 if (resposta.type === 'unico') {
-                    // Achou só um (Placa exata) -> Mostra a ficha direto
+                    // Achou Placa exata
                     mostrarFicha(resposta.data);
                 } else if (resposta.type === 'lista') {
-                    // Achou vários -> Abre o Modal
+                    // Achou vários (Modelo)
                     abrirModal(resposta.data);
                 } else {
-                    // Não achou nada
+                    // Nada encontrado
                     document.getElementById('msgErro').style.display = 'block';
                 }
-
-                input.blur(); // Esconde teclado celular
+                
+                input.blur(); // Fecha teclado no celular
 
             } catch (e) {
                 console.error("Erro", e);
-                alert("Erro ao buscar dados.");
+                alert("Erro ao conectar com o servidor.");
             }
         }
 
         function mostrarFicha(veiculo) {
-            fecharModal(); // Garante que o modal fecha se estiver aberto
+            fecharModal();
             const area = document.getElementById('areaResultado');
             
             document.getElementById('resMarca').innerText = veiculo.Marca || '-';
@@ -147,12 +197,12 @@
 
         function abrirModal(lista) {
             const container = document.getElementById('listaVeiculos');
-            container.innerHTML = ''; // Limpa lista anterior
+            container.innerHTML = ''; // Limpa anterior
 
             lista.forEach(carro => {
                 const item = document.createElement('div');
                 item.className = 'carro-item';
-                // Formata o valor para exibir na lista
+                
                 const valorFormatado = parseFloat(carro.Valor || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
                 
                 item.innerHTML = `
@@ -163,7 +213,6 @@
                     <div class="carro-valor">${valorFormatado}</div>
                 `;
                 
-                // Ao clicar no item, abre a ficha dele
                 item.onclick = () => mostrarFicha(carro);
                 container.appendChild(item);
             });

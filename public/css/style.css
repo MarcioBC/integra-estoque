@@ -1,135 +1,285 @@
+:root {
+    --primary-color: #0f172a; /* Azul Escuro Profissional */
+    --accent-color: #2563eb;  /* Azul Brilhante */
+    --success-color: #16a34a; /* Verde Dinheiro */
+    --bg-color: #f1f5f9;      /* Fundo Cinza Claro */
+    --card-bg: #ffffff;
+    --text-main: #334155;
+    --text-light: #64748b;
+    --radius: 16px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
+    align-items: flex-start; /* Melhor para celular */
+    min-height: 100vh;
     margin: 0;
-    padding-top: 20px;
+    padding: 20px 10px;
 }
 
+/* Container Principal (Cartão) */
 .container {
-    background: white;
-    width: 90%;
+    background: var(--card-bg);
+    width: 100%;
     max-width: 400px;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    border: 1px solid #000; /* Borda preta conforme desenho */
-    min-height: 500px;
+    padding: 30px 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
 }
 
+/* Barra colorida no topo */
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+/* Cabeçalho */
 .app-header {
-    margin-bottom: 30px;
+    text-align: center;
+    margin-bottom: 25px;
 }
-
 .app-header h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary-color);
 }
-
 .app-header p {
     margin: 5px 0;
     font-size: 14px;
-    color: #555;
+    color: var(--text-light);
+}
+.reset-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--accent-color);
+    text-decoration: none;
 }
 
+/* --- UPLOAD ESTILIZADO (Correção dos botões) --- */
+.upload-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Esconde o input feio nativo */
+input[type="file"] {
+    display: none;
+}
+
+.upload-area {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.custom-file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 30px 15px;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.custom-file-upload:hover {
+    border-color: var(--accent-color);
+    background: #eff6ff;
+}
+
+.icon-folder {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.text-upload {
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.file-name-display {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 10px;
+}
+.file-name-display.selected {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+/* Botão Principal */
+.btn-main {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 16px;
+    width: 100%;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s, background 0.2s;
+    margin-top: 10px;
+}
+.btn-main:active {
+    transform: scale(0.98);
+}
+.btn-main:hover {
+    background: #1e293b;
+}
+
+/* --- BUSCA --- */
 .search-section label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
 .search-section input {
     width: 100%;
-    padding: 10px;
-    font-size: 18px;
-    border: 3px solid #000; /* Borda grossa no input conforme desenho */
-    box-sizing: border-box;
-    text-transform: uppercase;
+    padding: 14px;
+    font-size: 20px;
+    font-weight: 700;
     text-align: center;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+.search-section input:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }
 
-.search-section button {
-    background: #000;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-weight: bold;
+/* --- RESULTADO (Ficha) --- */
+.result-title {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 30px 0 10px;
+    position: relative;
+}
+.result-title::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: #e2e8f0;
+    margin: 5px auto 0;
 }
 
-/* Estilo do Cartão de Resultado */
 .result-card {
-    border: 1px solid #333;
-    border-radius: 15px; /* Bordas arredondadas do card interno */
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     padding: 20px;
-    margin-top: 10px;
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-}
-
-.field.right {
-    text-align: right;
     align-items: flex-end;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #f1f5f9;
+    padding-bottom: 5px;
+}
+.row:last-child { border: none; margin: 0; padding: 0; }
+
+.field { display: flex; flex-direction: column; }
+.field.right { text-align: right; align-items: flex-end; }
+.field.full-center { width: 100%; text-align: center; align-items: center; }
+
+.label { font-size: 10px; text-transform: uppercase; color: var(--text-light); font-weight: 700; }
+.value { font-size: 15px; font-weight: 600; color: var(--primary-color); }
+
+.store-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
 }
 
-.label {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 2px;
+.highlight-row {
+    margin-top: 20px;
+    border-top: none;
+    padding-top: 10px;
 }
 
-.value {
-    font-size: 16px;
-    font-weight: bold;
-    color: #000;
+.value.highlight {
+    font-size: 26px;
+    color: var(--success-color);
+    font-weight: 800;
 }
 
-.price {
-    color: #2e7d32;
-    font-size: 18px;
-}
-
-/* Tela de Upload */
-.upload-screen {
+.error-msg {
+    color: #ef4444;
     text-align: center;
-    padding-top: 50px;
-}
-.upload-screen input {
-    margin: 20px 0;
+    background: #fef2f2;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #fee2e2;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-/* --- ESTILOS DO MODAL --- */
+/* --- MODAL (Lista) --- */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: none; /* Escondido por padrão */
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
     justify-content: center;
-    align-items: flex-end; /* No celular, legal abrir de baixo, ou center */
-    z-index: 1000;
+    align-items: flex-end; /* Mobile: sobe do fundo */
+    z-index: 100;
 }
 
 .modal-content {
     background: white;
     width: 100%;
     max-width: 400px;
-    height: 80vh; /* Ocupa 80% da altura */
-    border-radius: 20px 20px 0 0; /* Arredonda só em cima */
+    height: 80vh;
+    border-radius: 20px 20px 0 0;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -142,75 +292,25 @@ body {
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
 }
+.modal-header h4 { margin: 0; color: var(--primary-color); }
+.close-btn { font-size: 24px; cursor: pointer; color: #999; padding: 0 10px; }
 
-.modal-header h4 {
-    margin: 0;
-    font-size: 18px;
-    color: var(--primary-color);
-}
-
-.close-btn {
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #999;
-}
-
-.lista-items {
-    overflow-y: auto; /* Permite rolar a lista */
-    flex: 1;
-}
+.lista-items { overflow-y: auto; flex: 1; }
 
 .carro-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #f1f5f9;
-    cursor: pointer;
-    transition: background 0.2s;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 0; border-bottom: 1px solid #f1f5f9; cursor: pointer;
 }
+.carro-item:active { background: #f8fafc; }
+.carro-modelo { font-weight: 700; font-size: 14px; color: var(--primary-color); display: block; }
+.carro-detalhe { font-size: 12px; color: var(--text-light); }
+.carro-valor { font-weight: 700; font-size: 14px; color: var(--success-color); }
 
-.carro-item:active {
-    background: #f8fafc;
-}
-
-.carro-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.carro-modelo {
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--primary-color);
-}
-
-.carro-detalhe {
-    font-size: 12px;
-    color: var(--text-light);
-    margin-top: 2px;
-}
-
-.carro-valor {
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--success-color);
-}
-
-/* Ajuste para desktop ficar centralizado */
+/* Desktop Adjustment */
 @media (min-width: 500px) {
     .modal-overlay { align-items: center; }
-    .modal-content { 
-        height: auto; 
-        max-height: 80vh; 
-        border-radius: 16px; 
-    }
+    .modal-content { height: auto; max-height: 80vh; border-radius: 16px; }
 }

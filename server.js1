@@ -4,18 +4,9 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
-const https = require('https'); // Necessário para o sistema anti-sono
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// --- TRAVA DE SEGURANÇA ---
-// Garante que o servidor só inicia se tiver o banco configurado
-if (!process.env.DATABASE_URL) {
-    console.error("❌ ERRO CRÍTICO: A variável DATABASE_URL não foi configurada.");
-    console.error("👉 Configure no painel do Render (Environment Variables).");
-    process.exit(1); 
-}
 
 // Configuração do Banco (Neon) com SSL
 const pool = new Pool({
@@ -23,7 +14,7 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Configuração de Upload (MEMÓRIA RAM - Resolve erro de pasta no Render)
+// Configuração de Upload (MEMÓRIA RAM - Resolve erro 500 no Render)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -46,8 +37,8 @@ pool.query(`
         loja TEXT,
         valor NUMERIC
     )
-`).then(() => console.log("✅ Tabela 'veiculos' verificada/criada com sucesso."))
-  .catch(err => console.error("❌ Erro ao verificar tabela:", err));
+`).then(() => console.log("Tabela 'veiculos' verificada com sucesso."))
+  .catch(err => console.error("Erro ao verificar tabela:", err));
 
 
 // Rota Principal
@@ -61,14 +52,14 @@ app.get('/', async (req, res) => {
     }
 });
 
-// Rota de Upload (Processamento na Memória)
+// Rota de Upload (Blindada)
 app.post('/upload', upload.single('planilha'), async (req, res) => {
     if (!req.file) return res.status(400).send("Nenhum arquivo enviado.");
 
     const client = await pool.connect();
 
     try {
-        // Lê o arquivo direto do Buffer da memória
+        // Lê o arquivo direto da memória
         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const dadosBrutos = xlsx.utils.sheet_to_json(sheet);
@@ -82,7 +73,7 @@ app.post('/upload', upload.single('planilha'), async (req, res) => {
         `;
 
         for (const item of dadosBrutos) {
-            // Tratamento de valor monetário
+            // Tratamento de valor (R$)
             let valorLimpo = 0;
             if (item['Venda']) {
                 let v = item['Venda'].toString().replace('R$', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.');
@@ -107,19 +98,19 @@ app.post('/upload', upload.single('planilha'), async (req, res) => {
         }
 
         await client.query('COMMIT');
-        console.log(`✅ Sucesso: ${dadosBrutos.length} veículos carregados.`);
+        console.log(`Sucesso: ${dadosBrutos.length} veículos carregados.`);
         res.redirect('/');
 
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error("❌ ERRO NO UPLOAD:", error);
+        console.error("ERRO NO UPLOAD:", error); // Isso aparecerá nos logs do Render
         res.status(500).send(`Erro ao processar: ${error.message}`);
     } finally {
         client.release();
     }
 });
 
-// Rota de Busca Inteligente
+// Rota de Busca Inteligente (Placa OU Modelo)
 app.post('/buscar', async (req, res) => {
     let termo = (req.body.termo || '').trim().toUpperCase();
     let termoLimpo = termo.replace('-', ''); // Para busca de placa
@@ -129,6 +120,7 @@ app.post('/buscar', async (req, res) => {
         const buscaPlaca = await pool.query('SELECT * FROM veiculos WHERE placa = $1', [termoLimpo]);
         
         if (buscaPlaca.rows.length > 0) {
+            // Achou placa exata: retorna tipo ÚNICO
             return res.json({ type: 'unico', data: formatarVeiculo(buscaPlaca.rows[0]) });
         }
 
@@ -139,6 +131,7 @@ app.post('/buscar', async (req, res) => {
         );
 
         if (buscaModelo.rows.length > 0) {
+            // Achou lista de carros: retorna tipo LISTA
             const listaFormatada = buscaModelo.rows.map(formatarVeiculo);
             return res.json({ type: 'lista', data: listaFormatada });
         }
@@ -158,10 +151,10 @@ app.get('/reset', async (req, res) => {
     res.redirect('/');
 });
 
-// Função auxiliar para formatar resposta JSON
+// Função auxiliar para formatar os dados bonitinho
 function formatarVeiculo(data) {
     return {
-        Placa: data.placa,
+        Placa: data.placa, // Importante para o clique na lista
         Marca: data.marca,
         Modelo: data.modelo,
         Ano: data.ano,
@@ -174,16 +167,5 @@ function formatarVeiculo(data) {
 }
 
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-// --- SISTEMA ANTI-SONO (KEEP ALIVE) ---
-// Faz um acesso ao próprio site a cada 14 minutos para ele não desligar no Render
-setInterval(() => {
-    const url = 'https://integra-estoque.onrender.com'; // Seu link oficial
-    https.get(url, (res) => {
-        console.log(`⏰ Ping anti-sono enviado. Status: ${res.statusCode}`);
-    }).on('error', (e) => {
-        console.error(`⚠️ Erro no Ping anti-sono: ${e.message}`);
-    });
-}, 14 * 60 * 1000); // 14 minutos

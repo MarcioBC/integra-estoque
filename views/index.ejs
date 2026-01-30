@@ -3,225 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integre Estoque | Marcio</title>
+    <title>Integra Estoque | Marcio</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* --- ESTILOS VISUAIS (MANTIDOS IGUAIS) --- */
+        body {
+            background-color: #f3f4f6;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; font-family: 'Inter', sans-serif;
+        }
+        .container { width: 100%; max-width: 360px; padding: 20px; }
+        .main-card {
+            background: white; border-radius: 20px; padding: 30px 25px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .app-title { font-size: 22px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: -0.5px; }
+        .app-subtitle { font-size: 13px; color: #6b7280; margin-top: 4px; cursor: pointer; }
+
+        .search-wrapper { margin-top: 30px; text-align: left; }
+        .search-label {
+            font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 8px; display: block; margin-left: 4px;
+        }
+        .input-busca {
+            width: 100%; padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px;
+            font-size: 16px; font-weight: 600; text-align: center; outline: none;
+            transition: all 0.2s; box-sizing: border-box; text-transform: uppercase;
+            color: #111; background: #f9fafb;
+        }
+        .input-busca:focus { border-color: #0056b3; background: #fff; }
+
+        .btn-main {
+            width: 100%; padding: 16px; background-color: #0056b3; color: white;
+            border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+            cursor: pointer; margin-top: 15px; transition: background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 86, 179, 0.2);
+        }
+        .btn-main:hover { background-color: #004494; }
+
+        .ficha-veiculo { margin-top: 20px; text-align: left; animation: fadeIn 0.4s ease; }
+        .ficha-header { text-align: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 15px; }
+        .modelo-grande { font-size: 18px; font-weight: 800; color: #111; line-height: 1.3; }
+        .marca-ano { font-size: 12px; color: #666; font-weight: 500; margin-top: 4px; }
+
+        .grid-dados { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .dado-box { display: flex; flex-direction: column; }
+        .dado-label { font-size: 10px; color: #9ca3af; font-weight: 700; text-transform: uppercase; }
+        .dado-valor { font-size: 14px; color: #374151; font-weight: 700; }
+        .text-right { text-align: right; }
+
+        .badge-loja {
+            background: #eff6ff; color: #0056b3; font-size: 11px; font-weight: 700;
+            padding: 6px 12px; border-radius: 20px; display: inline-block; margin-top: 10px;
+        }
+
+        .preco-box { margin-top: 20px; text-align: center; padding-top: 15px; border-top: 2px dashed #f3f4f6; }
+        .preco-valor { font-size: 28px; color: #059669; font-weight: 800; letter-spacing: -1px; }
+
+        .btn-site {
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            margin-top: 20px; padding: 14px; 
+            background-color: #0056b3; color: white; text-decoration: none; border-radius: 12px; 
+            font-size: 14px; font-weight: 700; transition: opacity 0.2s;
+        }
+        .btn-site:hover { opacity: 0.9; }
+
+        .upload-area { border: 2px dashed #e5e7eb; border-radius: 12px; padding: 30px 10px; margin: 25px 0; cursor: pointer; transition: all 0.2s; }
+        .upload-area:hover { background: #f9fafb; border-color: #0056b3; }
+        
+        .noselect { user-select: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
     <div class="container">
-        
-        <% if (!dadosCarregados) { %>
-            <div class="upload-screen">
-                <div class="app-header">
-                    <h3>Bom dia, Marcio</h3>
-                    <p>Carregue a planilha para abrir a loja.</p>
-                </div>
-                
+        <div class="main-card">
+            
+            <% if (!dadosCarregados) { %>
+                <h1 class="app-title">Integra Estoque</h1>
+                <p class="app-subtitle">Olá, Marcio 🔒</p>
+
                 <form action="/upload" method="POST" enctype="multipart/form-data">
-                    
-                    <div class="upload-area">
-                        <label for="fileInput" class="custom-file-upload">
-                            <span class="icon-folder">📂</span>
-                            <span class="text-upload">Toque para escolher o arquivo</span>
-                        </label>
-                        <input type="file" id="fileInput" name="planilha" accept=".xlsx, .xls" required onchange="mostrarNomeArquivo()">
-                        
-                        <p id="nomeArquivo" class="file-name-display">Nenhum arquivo selecionado</p>
-                    </div>
-
-                    <button type="submit" class="btn-main" id="btnCarregar">
-                        ABRIR LOJA 🚀
-                    </button>
+                    <label class="upload-area" style="display: block;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">📂</div>
+                        <div style="font-size: 14px; color: #4b5563; font-weight: 500;">Toque para carregar planilha</div>
+                        <input type="file" name="planilha" accept=".xlsx, .xls" required onchange="this.form.submit()" style="display: none;">
+                    </label>
                 </form>
-            </div>
-        <% } else { %>
 
-            <div class="app-header">
-                <h3>Integre Estoque</h3>
-                <p>Olá, Marcio</p>
-                <a href="/reset" class="reset-link">↻ Carregar nova planilha</a>
-            </div>
+            <% } else { %>
 
-            <div class="search-section">
-                <label>Placa ou Modelo (ex: Onix)</label>
-                <input type="text" id="inputBusca" placeholder="DIGITE AQUI..." onkeyup="if(event.key === 'Enter') realizarBusca()">
-                <button onclick="realizarBusca()" class="btn-main">BUSCAR</button>
-            </div>
+                <h1 class="app-title">Integra Estoque</h1>
+                <p class="app-subtitle" onclick="cliqueSecreto()">
+                    Olá, Marcio <span id="contador-secreto" style="color:#0056b3; font-weight:bold;"></span>
+                </p>
+                <a href="/reset" id="link-reset" style="display:none; font-size:11px; color:#ef4444; text-decoration:none; margin-top:8px;">Sair / Trocar Planilha</a>
 
-            <div id="areaResultado" style="display: none;">
-                <div class="result-title">Ficha do Veículo</div>
-
-                <div class="result-card">
-                    <div class="row">
-                        <div class="field">
-                            <span class="label">Marca</span>
-                            <span class="value" id="resMarca">--</span>
-                        </div>
-                        <div class="field right">
-                            <span class="label">Modelo</span>
-                            <span class="value" id="resModelo">--</span>
-                        </div>
+                <div id="tela-busca">
+                    <div class="search-wrapper">
+                        <label class="search-label">Placa ou Modelo (Ex: Onix)</label>
+                        <input type="text" id="inputBusca" class="input-busca" placeholder="DIGITE AQUI..." onkeyup="if(event.key === 'Enter') realizarBusca()">
                     </div>
-
-                    <div class="row">
-                        <div class="field">
-                            <span class="label">Ano</span>
-                            <span class="value" id="resAno">--</span>
-                        </div>
-                        <div class="field right">
-                            <span class="label">Cor</span>
-                            <span class="value" id="resCor">--</span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="field">
-                            <span class="label">Quilometragem</span>
-                            <span class="value" id="resKm">--</span>
-                        </div>
-                        <div class="field right">
-                            <span class="label">Portas</span>
-                            <span class="value" id="resPortas">--</span>
-                        </div>
-                    </div>
-
-                    <div class="row" style="align-items: center; margin-top: 10px;">
-                        <div class="field">
-                            <span class="label">Localização</span>
-                            <span class="store-badge" id="resLoja">--</span>
-                        </div>
-                        <div class="field right">
-                            <span class="label">Placa</span>
-                            <span class="value" id="resPlaca" style="font-size: 12px; color:#999;">--</span>
-                        </div>
-                    </div>
-
-                    <div class="row highlight-row">
-                        <div class="field full-center">
-                            <span class="label">Valor de Venda</span>
-                            <span class="value highlight" id="resValor">--</span>
-                        </div>
-                    </div>
+                    <button onclick="realizarBusca()" class="btn-main">BUSCAR</button>
                 </div>
-            </div>
 
-            <p id="msgErro" class="error-msg" style="display: none;">Nenhum veículo encontrado.</p>
+                <div id="areaResultado" class="ficha-veiculo" style="display: none;">
+                    <div class="ficha-header">
+                        <div id="resModelo" class="modelo-grande">--</div>
+                        <div class="marca-ano">
+                            <span id="resMarca">--</span> • <span id="resAno">--</span>
+                        </div>
+                    </div>
 
-        <% } %>
+                    <div class="grid-dados">
+                        <div class="dado-box">
+                            <span class="dado-label">Cor</span>
+                            <span id="resCor" class="dado-valor">--</span>
+                        </div>
+                        <div class="dado-box text-right">
+                            <span class="dado-label">Quilometragem</span>
+                            <span id="resKm" class="dado-valor">--</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-dados">
+                        <div class="dado-box">
+                            <span class="dado-label">Portas</span>
+                            <span id="resPortas" class="dado-valor">--</span>
+                        </div>
+                        <div class="dado-box text-right">
+                            <span class="dado-label">Placa</span>
+                            <span id="resPlaca" class="dado-valor" style="letter-spacing: 1px;">--</span>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <span id="resLoja" class="badge-loja">--</span>
+                    </div>
+
+                    <div class="preco-box">
+                        <span class="dado-label" style="display: block; margin-bottom: 5px;">Valor de Venda</span>
+                        <span id="resValor" class="preco-valor">--</span>
+                    </div>
+
+                    <a id="btnVerSite" href="#" target="_blank" class="btn-site">
+                        Ver Estoque 🔗
+                    </a>
+
+                    <button onclick="novaBusca()" style="background: none; border: none; color: #9ca3af; font-size: 12px; margin-top: 20px; cursor: pointer; width: 100%;">
+                        Fazer outra busca
+                    </button>
+                </div>
+
+                <p id="msgErro" style="display: none; color: #ef4444; font-size: 14px; margin-top: 20px; font-weight: 600;">Veículo não encontrado.</p>
+
+            <% } %>
+        </div>
     </div>
 
-    <div id="modalLista" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Veículos Encontrados</h4>
-                <span onclick="fecharModal()" class="close-btn">&times;</span>
+    <div id="modalLista" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(2px); justify-content:center; align-items:center; z-index: 100;">
+        <div style="background:white; width: 85%; max-width: 320px; border-radius: 16px; padding: 20px; max-height: 400px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <h3 style="margin:0; font-size: 16px; color: #111;">Selecione o Veículo</h3>
+                <span onclick="document.getElementById('modalLista').style.display='none'" style="font-size:24px; cursor:pointer; color: #999;">&times;</span>
             </div>
-            <div id="listaVeiculos" class="lista-items">
-                </div>
+            <div id="listaVeiculos" style="overflow-y: auto;"></div>
         </div>
     </div>
 
     <script>
-        // Atualiza o texto quando escolhe o arquivo
-        function mostrarNomeArquivo() {
-            const input = document.getElementById('fileInput');
-            const label = document.getElementById('nomeArquivo');
-            if (input.files.length > 0) {
-                label.innerText = "Arquivo: " + input.files[0].name;
-                label.classList.add('selected');
-            } else {
-                label.innerText = "Nenhum arquivo selecionado";
-                label.classList.remove('selected');
+        function limparChave(chave) {
+            return chave.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        }
+
+        function encontrarValor(obj, possiveisNomes) {
+            if (!obj) return null;
+            const dadosLimpos = {};
+            Object.keys(obj).forEach(key => { dadosLimpos[limparChave(key)] = obj[key]; });
+            for (let nome of possiveisNomes) {
+                const nomeLimpo = limparChave(nome);
+                if (dadosLimpos[nomeLimpo] !== undefined) return dadosLimpos[nomeLimpo];
+            }
+            return null;
+        }
+
+        // --- TRADUTOR DE MARCAS CORRIGIDO ---
+        function obterMarcaLimpa(marcaSuja) {
+            if (!marcaSuja) return "TODOS";
+            const m = marcaSuja.toUpperCase();
+            
+            // Mapeia o que vem da planilha -> O que o site espera (?Marcas=XYZ)
+            if (m.includes("VOLKSWAGEN") || m.includes("VW")) return "VOLKSWAGEN";
+            if (m.includes("CHEVROLET") || m.includes("GM")) return "CHEVROLET";
+            if (m.includes("FIAT")) return "FIAT";
+            if (m.includes("FORD")) return "FORD";
+            if (m.includes("HONDA")) return "HONDA";
+            if (m.includes("TOYOTA")) return "TOYOTA";
+            if (m.includes("HYUNDAI")) return "HYUNDAI";
+            if (m.includes("RENAULT")) return "RENAULT";
+            if (m.includes("CITROEN")) return "CITROEN"; // Sem trema
+            if (m.includes("PEUGEOT")) return "PEUGEOT";
+            if (m.includes("BMW")) return "BMW";
+            if (m.includes("JEEP")) return "JEEP";
+            if (m.includes("NISSAN")) return "NISSAN";
+            if (m.includes("MITSUBISHI")) return "MITSUBISHI";
+            if (m.includes("AUDI")) return "AUDI";
+            if (m.includes("KIA")) return "KIA";
+            if (m.includes("CHERY")) return "CAOA CHERY"; // Geralmente é assim
+            
+            // Se não cair em nenhum acima, pega a primeira palavra e torce pra dar certo
+            return m.split(' ')[0].replace(/[^A-Z]/g, '');
+        }
+
+        let cliques = 0;
+        function cliqueSecreto() {
+            cliques++;
+            if(cliques >= 5) { 
+                document.getElementById('link-reset').style.display = 'block'; 
+                document.getElementById('contador-secreto').innerText = "🔓"; 
             }
         }
 
-        // Faz a busca no servidor
         async function realizarBusca() {
-            const input = document.getElementById('inputBusca');
-            const termo = input.value;
-            
-            if(termo.length < 2) return; // Mínimo 2 letras
-
-            // Reseta visual
-            document.getElementById('areaResultado').style.display = 'none';
+            const termo = document.getElementById('inputBusca').value;
+            if(termo.length < 2) return;
             document.getElementById('msgErro').style.display = 'none';
-
             try {
-                const response = await fetch('/buscar', {
+                const res = await fetch('/buscar', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ termo })
                 });
-
-                const resposta = await response.json();
-
-                if (resposta.type === 'unico') {
-                    // Achou Placa exata
-                    mostrarFicha(resposta.data);
-                } else if (resposta.type === 'lista') {
-                    // Achou vários (Modelo)
-                    abrirModal(resposta.data);
-                } else {
-                    // Nada encontrado
-                    document.getElementById('msgErro').style.display = 'block';
-                }
-                
-                input.blur(); // Fecha teclado no celular
-
-            } catch (e) {
-                console.error("Erro", e);
-                alert("Erro ao conectar com o servidor.");
-            }
+                const json = await res.json();
+                if(json.type === 'unico') preencherFicha(json.data);
+                else if(json.type === 'lista') abrirModal(json.data);
+                else document.getElementById('msgErro').style.display = 'block';
+            } catch (e) { alert("Erro de conexão"); }
         }
 
-        function mostrarFicha(veiculo) {
-            fecharModal();
-            const area = document.getElementById('areaResultado');
+        function preencherFicha(veiculo) {
+            document.getElementById('tela-busca').style.display = 'none';
+            document.getElementById('areaResultado').style.display = 'block';
+            document.getElementById('modalLista').style.display = 'none';
+
+            const marca = encontrarValor(veiculo, ['marca', 'fabricante']) || 'Marca';
+            const modelo = encontrarValor(veiculo, ['modelo', 'veiculo', 'descriçao']) || 'Modelo';
+            const ano = encontrarValor(veiculo, ['ano', 'ano modelo']);
+            const cor = encontrarValor(veiculo, ['cor', 'color', 'cor do veiculo', 'pintura']);
+            const km = encontrarValor(veiculo, ['km', 'quilometragem', 'odometro']);
+            const portas = encontrarValor(veiculo, ['portas', 'qtd portas']);
+            const placa = encontrarValor(veiculo, ['placa']) || '---';
+            const loja = encontrarValor(veiculo, ['loja', 'localizacao', 'unidade']) || 'Matriz';
+            const valor = encontrarValor(veiculo, ['valor', 'preco', 'venda']) || 0;
+
+            document.getElementById('resModelo').innerText = modelo;
+            document.getElementById('resMarca').innerText = marca;
+            document.getElementById('resAno').innerText = ano || '--';
+            document.getElementById('resCor').innerText = cor || 'Não inf.';
+            document.getElementById('resKm').innerText = km ? km + ' km' : 'Não inf.';
+            document.getElementById('resPortas').innerText = portas || '--';
+            document.getElementById('resPlaca').innerText = placa;
+            document.getElementById('resLoja').innerText = loja;
             
-            document.getElementById('resMarca').innerText = veiculo.Marca || '-';
-            document.getElementById('resModelo').innerText = veiculo.Modelo || '-';
-            document.getElementById('resAno').innerText = veiculo.Ano || '-';
-            document.getElementById('resCor').innerText = veiculo.Cor || '-';
-            document.getElementById('resKm').innerText = veiculo.Km ? veiculo.Km + ' km' : '-';
-            document.getElementById('resPortas').innerText = veiculo.Portas || '-';
-            document.getElementById('resLoja').innerText = veiculo.Loja || 'Estoque Geral';
-            document.getElementById('resPlaca').innerText = veiculo.Placa || '';
+            const valorNum = parseFloat(valor);
+            document.getElementById('resValor').innerText = valorNum.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+
+            // --- LÓGICA DE LINK 100% MARCA ---
+            // 1. Pega a marca que está no veículo (Ex: "VW - Volkswagen")
+            // 2. Limpa ela para o padrão do site (Ex: "VOLKSWAGEN")
+            const marcaLimpa = obterMarcaLimpa(marca);
             
-            let valor = veiculo.Valor || 0;
-            document.getElementById('resValor').innerText = parseFloat(valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+            // 3. Monta o link focado APENAS na marca
+            document.getElementById('btnVerSite').href = `https://www.dsmultimarcas.com.br/estoque?Marcas=${encodeURIComponent(marcaLimpa)}`;
             
-            area.style.display = 'block';
+            // 4. Atualiza o texto do botão para o usuário saber
+            document.getElementById('btnVerSite').innerText = `Ver Estoque ${marcaLimpa} 🔗`;
         }
 
         function abrirModal(lista) {
-            const container = document.getElementById('listaVeiculos');
-            container.innerHTML = ''; // Limpa anterior
-
-            lista.forEach(carro => {
-                const item = document.createElement('div');
-                item.className = 'carro-item';
-                
-                const valorFormatado = parseFloat(carro.Valor || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-                
-                item.innerHTML = `
-                    <div class="carro-info">
-                        <span class="carro-modelo">${carro.Modelo}</span>
-                        <span class="carro-detalhe">${carro.Cor} • ${carro.Ano} • ${carro.Placa}</span>
-                    </div>
-                    <div class="carro-valor">${valorFormatado}</div>
-                `;
-                
-                item.onclick = () => mostrarFicha(carro);
-                container.appendChild(item);
+            const listaEl = document.getElementById('listaVeiculos');
+            listaEl.innerHTML = '';
+            lista.forEach(v => {
+                const modelo = encontrarValor(v, ['modelo']);
+                const placa = encontrarValor(v, ['placa']);
+                const div = document.createElement('div');
+                div.style.padding = "12px";
+                div.style.borderBottom = "1px solid #f3f4f6";
+                div.style.cursor = "pointer";
+                div.innerHTML = `<b style="color:#111">${modelo}</b> <br> <span style='font-size:12px; color:#6b7280'>${placa}</span>`;
+                div.onclick = () => preencherFicha(v);
+                listaEl.appendChild(div);
             });
-
             document.getElementById('modalLista').style.display = 'flex';
         }
 
-        function fecharModal() {
-            document.getElementById('modalLista').style.display = 'none';
+        function novaBusca() {
+            document.getElementById('areaResultado').style.display = 'none';
+            document.getElementById('tela-busca').style.display = 'block';
+            document.getElementById('inputBusca').value = '';
+            document.getElementById('inputBusca').focus();
         }
     </script>
 </body>

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* --- ESTILOS VISUAIS (MANTIDOS IGUAIS) --- */
+        /* --- ESTILOS VISUAIS (MANTIDOS) --- */
         body {
             background-color: #f3f4f6;
             display: flex; justify-content: center; align-items: center;
@@ -192,12 +192,9 @@
             return null;
         }
 
-        // --- TRADUTOR DE MARCAS CORRIGIDO ---
         function obterMarcaLimpa(marcaSuja) {
             if (!marcaSuja) return "TODOS";
             const m = marcaSuja.toUpperCase();
-            
-            // Mapeia o que vem da planilha -> O que o site espera (?Marcas=XYZ)
             if (m.includes("VOLKSWAGEN") || m.includes("VW")) return "VOLKSWAGEN";
             if (m.includes("CHEVROLET") || m.includes("GM")) return "CHEVROLET";
             if (m.includes("FIAT")) return "FIAT";
@@ -206,7 +203,7 @@
             if (m.includes("TOYOTA")) return "TOYOTA";
             if (m.includes("HYUNDAI")) return "HYUNDAI";
             if (m.includes("RENAULT")) return "RENAULT";
-            if (m.includes("CITROEN")) return "CITROEN"; // Sem trema
+            if (m.includes("CITROEN")) return "CITROEN";
             if (m.includes("PEUGEOT")) return "PEUGEOT";
             if (m.includes("BMW")) return "BMW";
             if (m.includes("JEEP")) return "JEEP";
@@ -214,9 +211,7 @@
             if (m.includes("MITSUBISHI")) return "MITSUBISHI";
             if (m.includes("AUDI")) return "AUDI";
             if (m.includes("KIA")) return "KIA";
-            if (m.includes("CHERY")) return "CAOA CHERY"; // Geralmente é assim
-            
-            // Se não cair em nenhum acima, pega a primeira palavra e torce pra dar certo
+            if (m.includes("CHERY")) return "CAOA CHERY"; 
             return m.split(' ')[0].replace(/[^A-Z]/g, '');
         }
 
@@ -273,15 +268,8 @@
             const valorNum = parseFloat(valor);
             document.getElementById('resValor').innerText = valorNum.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
-            // --- LÓGICA DE LINK 100% MARCA ---
-            // 1. Pega a marca que está no veículo (Ex: "VW - Volkswagen")
-            // 2. Limpa ela para o padrão do site (Ex: "VOLKSWAGEN")
             const marcaLimpa = obterMarcaLimpa(marca);
-            
-            // 3. Monta o link focado APENAS na marca
             document.getElementById('btnVerSite').href = `https://www.dsmultimarcas.com.br/estoque?Marcas=${encodeURIComponent(marcaLimpa)}`;
-            
-            // 4. Atualiza o texto do botão para o usuário saber
             document.getElementById('btnVerSite').innerText = `Ver Estoque ${marcaLimpa} 🔗`;
         }
 
@@ -291,11 +279,23 @@
             lista.forEach(v => {
                 const modelo = encontrarValor(v, ['modelo']);
                 const placa = encontrarValor(v, ['placa']);
+                const ano = encontrarValor(v, ['ano', 'ano modelo']) || ''; // Pega o ano
+
                 const div = document.createElement('div');
                 div.style.padding = "12px";
                 div.style.borderBottom = "1px solid #f3f4f6";
                 div.style.cursor = "pointer";
-                div.innerHTML = `<b style="color:#111">${modelo}</b> <br> <span style='font-size:12px; color:#6b7280'>${placa}</span>`;
+                
+                // --- AQUI ESTÁ A MUDANÇA ---
+                // Adicionamos o ano em Azul e Negrito ao lado do modelo
+                div.innerHTML = `
+                    <div style="font-size: 15px; margin-bottom: 4px;">
+                        <b style="color:#111">${modelo}</b> 
+                        <b style="color:#0056b3; margin-left: 6px;">${ano}</b>
+                    </div>
+                    <span style='font-size:12px; color:#6b7280; font-weight:500;'>${placa}</span>
+                `;
+                
                 div.onclick = () => preencherFicha(v);
                 listaEl.appendChild(div);
             });

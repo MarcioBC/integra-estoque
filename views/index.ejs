@@ -106,7 +106,11 @@
     </div>
 
     <script>
-        function limparChave(k) { return k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); }
+        function limparChave(k) { 
+            return k.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+                    .replace(/[^a-z0-9]/g, ""); 
+        }
         
         function encontrarValor(obj, nomes) {
             if (!obj) return null;
@@ -115,6 +119,24 @@
             for (let n of nomes) { if (limpos[limparChave(n)] !== undefined) return limpos[limparChave(n)]; }
             return null;
         }
+
+        // --- FUNÇÃO SUPER INTELIGENTE DE ANO ---
+        // Procura QUALQUER sequência de 4 dígitos (ex: 2012, 2013)
+        // e pega sempre a ÚLTIMA. 
+        // 2012/2013 -> Pega 2013
+        function tratarAno(anoRaw) {
+            if(!anoRaw) return '';
+            const str = String(anoRaw);
+            // Regex: procura 4 numeros seguidos (\d{4})
+            const anosEncontrados = str.match(/\d{4}/g);
+            
+            if (anosEncontrados && anosEncontrados.length > 0) {
+                // Retorna o último da lista
+                return anosEncontrados[anosEncontrados.length - 1];
+            }
+            return str; // Se não achar nada, devolve o texto original
+        }
+        // ---------------------------------------
 
         function obterMarcaLimpa(m) {
             if (!m) return "TODOS";
@@ -160,7 +182,11 @@
 
             const marca = encontrarValor(v, ['marca', 'fabricante']) || 'Marca';
             const modelo = encontrarValor(v, ['modelo', 'veiculo']) || 'Modelo';
-            const ano = encontrarValor(v, ['ano', 'ano modelo']) || '--';
+            
+            // LISTA DE PRIORIDADE ATUALIZADA: Procura 'anomodelo' ANTES de 'ano'
+            const anoRaw = encontrarValor(v, ['anomodelo', 'anomod', 'anofabricacao', 'ano', 'year']);
+            const ano = tratarAno(anoRaw);
+            
             const placa = encontrarValor(v, ['placa']) || '---';
             let valor = v['valor_tratado'];
             if(!valor) valor = encontrarValor(v, ['valor', 'preco', 'venda']) || 0;
@@ -186,7 +212,11 @@
             lista.forEach(v => {
                 const modelo = encontrarValor(v, ['modelo', 'veiculo']) || 'Modelo';
                 const placa = encontrarValor(v, ['placa']) || '';
-                const ano = encontrarValor(v, ['ano', 'ano modelo']) || '';
+                
+                // Aplica a mesma lógica de prioridade e tratamento na lista
+                const anoRaw = encontrarValor(v, ['anomodelo', 'anomod', 'anofabricacao', 'ano', 'year']); 
+                const ano = tratarAno(anoRaw);
+                
                 let valor = v['valor_tratado'];
                 if(!valor) valor = parseFloat(encontrarValor(v, ['valor', 'preco']) || 0);
                 const valorFmt = valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
@@ -202,7 +232,7 @@
                     </div>
                     <div style="display:flex; justify-content:space-between; width:100%">
                         <span style='font-size:12px; color:#6b7280; font-weight:500;'>${placa}</span>
-                        <span style='font-size:13px; color:#c0392b; font-weight:700;'>${valorFmt}</span>
+                        <span style='font-size:13px; color:#0056b3; font-weight:700;'>${valorFmt}</span>
                     </div>
                 `;
                 div.onclick = () => preencherFicha(v);

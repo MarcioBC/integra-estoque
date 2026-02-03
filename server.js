@@ -11,41 +11,38 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 
-// --- SISTEMA ANTI-SONO COM HORÁRIO COMERCIAL (07:50 às 18:00) ---
-// ⚠️ COLOQUE SEU LINK ABAIXO:
-const MINHA_URL = 'https://SEU-SITE-AQUI.onrender.com'; 
+// --- SISTEMA ANTI-SONO TURBO (07:50 às 18:00) ---
+// Já configurei seu link aqui:
+const MINHA_URL = 'https://integra-estoque.onrender.com'; 
 
-if (MINHA_URL.includes('onrender.com')) {
-    console.log(`⏰ Sistema de Horário Comercial configurado para: ${MINHA_URL}`);
+console.log(`⏰ Sistema de Horário Comercial ativado para: ${MINHA_URL}`);
+
+setInterval(() => {
+    // Pega a hora certa no Brasil (São Paulo)
+    const agora = new Date();
+    const dataBR = new Date(agora.toLocaleString("en-US", {timeZone: "America/Sao_Paulo"}));
     
-    setInterval(() => {
-        // Pega a hora certa no Brasil (São Paulo)
-        const agora = new Date();
-        const dataBR = new Date(agora.toLocaleString("en-US", {timeZone: "America/Sao_Paulo"}));
-        
-        const hora = dataBR.getHours();
-        const minutos = dataBR.getMinutes();
-        
-        // Transforma tudo em minutos para facilitar a conta
-        // Ex: 07:50 = (7 * 60) + 50 = 470 minutos
-        const tempoAtual = (hora * 60) + minutos;
-        const inicioDia = (7 * 60) + 50; // 07:50
-        const fimDia = (18 * 60);        // 18:00
+    const hora = dataBR.getHours();
+    const minutos = dataBR.getMinutes();
+    
+    // Transforma tudo em minutos
+    const tempoAtual = (hora * 60) + minutos;
+    const inicioDia = (7 * 60) + 50; // 07:50
+    const fimDia = (18 * 60);        // 18:00
 
-        // Lógica: Só pinga se estiver dentro do horário
-        if (tempoAtual >= inicioDia && tempoAtual < fimDia) {
-            console.log(`[${hora}:${minutos}] ☀️ Dia de trabalho! Mantendo site acordado...`);
-            https.get(MINHA_URL, (res) => {
-                // Ping silencioso, apenas para manter ativo
-            }).on('error', (e) => {
-                console.error(`Erro no ping: ${e.message}`);
-            });
-        } else {
-            console.log(`[${hora}:${minutos}] 🌙 Fora do expediente. Deixando o sistema dormir.`);
-        }
+    // Se estiver no horário de trabalho
+    if (tempoAtual >= inicioDia && tempoAtual < fimDia) {
+        console.log(`[${hora}:${minutos}] ⚡ Ping de 5min enviado! Mantendo acordado...`);
+        https.get(MINHA_URL, (res) => {
+            // Ping silencioso
+        }).on('error', (e) => {
+            console.error(`Erro no ping: ${e.message}`);
+        });
+    } else {
+        // Fora do horário, deixa dormir
+    }
 
-    }, 10 * 60 * 1000); // Verifica a cada 10 minutos
-}
+}, 5 * 60 * 1000); // MUDANÇA: Verifica a cada 5 minutos (antes era 10)
 // -------------------------------------------------------------
 
 // Armazenamento em memória

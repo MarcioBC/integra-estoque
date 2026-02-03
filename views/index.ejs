@@ -4,90 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Integra Estoque | Marcio</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* --- ESTILOS VISUAIS (MANTIDOS) --- */
-        body {
-            background-color: #f3f4f6;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0; font-family: 'Inter', sans-serif;
-        }
+        body { background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Inter', sans-serif; }
         .container { width: 100%; max-width: 360px; padding: 20px; }
-        .main-card {
-            background: white; border-radius: 20px; padding: 30px 25px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+        .main-card { background: white; border-radius: 20px; padding: 30px 25px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); text-align: center; }
         .app-title { font-size: 22px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: -0.5px; }
         .app-subtitle { font-size: 13px; color: #6b7280; margin-top: 4px; cursor: pointer; }
-
         .search-wrapper { margin-top: 30px; text-align: left; }
-        .search-label {
-            font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase;
-            letter-spacing: 0.5px; margin-bottom: 8px; display: block; margin-left: 4px;
-        }
-        .input-busca {
-            width: 100%; padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px;
-            font-size: 16px; font-weight: 600; text-align: center; outline: none;
-            transition: all 0.2s; box-sizing: border-box; text-transform: uppercase;
-            color: #111; background: #f9fafb;
-        }
+        .search-label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 8px; display: block; margin-left: 4px; }
+        .input-busca { width: 100%; padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; font-weight: 600; text-align: center; outline: none; text-transform: uppercase; color: #111; background: #f9fafb; box-sizing: border-box;}
         .input-busca:focus { border-color: #0056b3; background: #fff; }
-
-        .btn-main {
-            width: 100%; padding: 16px; background-color: #0056b3; color: white;
-            border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
-            cursor: pointer; margin-top: 15px; transition: background-color 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 86, 179, 0.2);
-        }
-        .btn-main:hover { background-color: #004494; }
-
+        .btn-main { width: 100%; padding: 16px; background-color: #0056b3; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 6px -1px rgba(0, 86, 179, 0.2); }
         .ficha-veiculo { margin-top: 20px; text-align: left; animation: fadeIn 0.4s ease; }
         .ficha-header { text-align: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 15px; }
         .modelo-grande { font-size: 18px; font-weight: 800; color: #111; line-height: 1.3; }
         .marca-ano { font-size: 12px; color: #666; font-weight: 500; margin-top: 4px; }
-
         .grid-dados { display: flex; justify-content: space-between; margin-bottom: 12px; }
         .dado-box { display: flex; flex-direction: column; }
         .dado-label { font-size: 10px; color: #9ca3af; font-weight: 700; text-transform: uppercase; }
         .dado-valor { font-size: 14px; color: #374151; font-weight: 700; }
         .text-right { text-align: right; }
-
-        .badge-loja {
-            background: #eff6ff; color: #0056b3; font-size: 11px; font-weight: 700;
-            padding: 6px 12px; border-radius: 20px; display: inline-block; margin-top: 10px;
-        }
-
+        .badge-loja { background: #eff6ff; color: #0056b3; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; display: inline-block; margin-top: 10px; }
         .preco-box { margin-top: 20px; text-align: center; padding-top: 15px; border-top: 2px dashed #f3f4f6; }
         .preco-valor { font-size: 28px; color: #059669; font-weight: 800; letter-spacing: -1px; }
-
-        .btn-site {
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-            margin-top: 20px; padding: 14px; 
-            background-color: #0056b3; color: white; text-decoration: none; border-radius: 12px; 
-            font-size: 14px; font-weight: 700; transition: opacity 0.2s;
-        }
-        .btn-site:hover { opacity: 0.9; }
-
-        .upload-area { border: 2px dashed #e5e7eb; border-radius: 12px; padding: 30px 10px; margin: 25px 0; cursor: pointer; transition: all 0.2s; }
+        .btn-site { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; padding: 14px; background-color: #0056b3; color: white; text-decoration: none; border-radius: 12px; font-size: 14px; font-weight: 700; }
+        .upload-area { border: 2px dashed #e5e7eb; border-radius: 12px; padding: 30px 10px; margin: 25px 0; cursor: pointer; }
         .upload-area:hover { background: #f9fafb; border-color: #0056b3; }
-        
-        .noselect { user-select: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="main-card">
-            
             <% if (!dadosCarregados) { %>
                 <h1 class="app-title">Integra Estoque</h1>
                 <p class="app-subtitle">Olá, Marcio 🔒</p>
-
                 <form action="/upload" method="POST" enctype="multipart/form-data">
                     <label class="upload-area" style="display: block;">
                         <div style="font-size: 32px; margin-bottom: 8px;">📂</div>
@@ -95,18 +49,14 @@
                         <input type="file" name="planilha" accept=".xlsx, .xls" required onchange="this.form.submit()" style="display: none;">
                     </label>
                 </form>
-
             <% } else { %>
-
                 <h1 class="app-title">Integra Estoque</h1>
-                <p class="app-subtitle" onclick="cliqueSecreto()">
-                    Olá, Marcio <span id="contador-secreto" style="color:#0056b3; font-weight:bold;"></span>
-                </p>
+                <p class="app-subtitle" onclick="cliqueSecreto()">Olá, Marcio <span id="contador-secreto" style="color:#0056b3;"></span></p>
                 <a href="/reset" id="link-reset" style="display:none; font-size:11px; color:#ef4444; text-decoration:none; margin-top:8px;">Sair / Trocar Planilha</a>
 
                 <div id="tela-busca">
                     <div class="search-wrapper">
-                        <label class="search-label">Placa ou Modelo (Ex: Onix)</label>
+                        <label class="search-label">Placa, Modelo ou Valor (Ex: 30.000)</label>
                         <input type="text" id="inputBusca" class="input-busca" placeholder="DIGITE AQUI..." onkeyup="if(event.key === 'Enter') realizarBusca()">
                     </div>
                     <button onclick="realizarBusca()" class="btn-main">BUSCAR</button>
@@ -115,113 +65,75 @@
                 <div id="areaResultado" class="ficha-veiculo" style="display: none;">
                     <div class="ficha-header">
                         <div id="resModelo" class="modelo-grande">--</div>
-                        <div class="marca-ano">
-                            <span id="resMarca">--</span> • <span id="resAno">--</span>
-                        </div>
+                        <div class="marca-ano"><span id="resMarca">--</span> • <span id="resAno">--</span></div>
                     </div>
-
                     <div class="grid-dados">
-                        <div class="dado-box">
-                            <span class="dado-label">Cor</span>
-                            <span id="resCor" class="dado-valor">--</span>
-                        </div>
-                        <div class="dado-box text-right">
-                            <span class="dado-label">Quilometragem</span>
-                            <span id="resKm" class="dado-valor">--</span>
-                        </div>
+                        <div class="dado-box"><span class="dado-label">Cor</span><span id="resCor" class="dado-valor">--</span></div>
+                        <div class="dado-box text-right"><span class="dado-label">Km</span><span id="resKm" class="dado-valor">--</span></div>
                     </div>
-
                     <div class="grid-dados">
-                        <div class="dado-box">
-                            <span class="dado-label">Portas</span>
-                            <span id="resPortas" class="dado-valor">--</span>
-                        </div>
-                        <div class="dado-box text-right">
-                            <span class="dado-label">Placa</span>
-                            <span id="resPlaca" class="dado-valor" style="letter-spacing: 1px;">--</span>
-                        </div>
+                        <div class="dado-box"><span class="dado-label">Portas</span><span id="resPortas" class="dado-valor">--</span></div>
+                        <div class="dado-box text-right"><span class="dado-label">Placa</span><span id="resPlaca" class="dado-valor" style="letter-spacing:1px;">--</span></div>
                     </div>
-
-                    <div style="text-align: center;">
-                        <span id="resLoja" class="badge-loja">--</span>
-                    </div>
-
+                    <div style="text-align: center;"><span id="resLoja" class="badge-loja">--</span></div>
                     <div class="preco-box">
-                        <span class="dado-label" style="display: block; margin-bottom: 5px;">Valor de Venda</span>
+                        <span class="dado-label" style="display:block;margin-bottom:5px;">Valor de Venda</span>
                         <span id="resValor" class="preco-valor">--</span>
                     </div>
-
-                    <a id="btnVerSite" href="#" target="_blank" class="btn-site">
-                        Ver Estoque 🔗
-                    </a>
-
-                    <button onclick="novaBusca()" style="background: none; border: none; color: #9ca3af; font-size: 12px; margin-top: 20px; cursor: pointer; width: 100%;">
-                        Fazer outra busca
-                    </button>
+                    <a id="btnVerSite" href="#" target="_blank" class="btn-site">Ver Estoque 🔗</a>
+                    <button onclick="novaBusca()" style="background:none;border:none;color:#9ca3af;font-size:12px;margin-top:20px;cursor:pointer;width:100%;">Fazer outra busca</button>
                 </div>
-
                 <p id="msgErro" style="display: none; color: #ef4444; font-size: 14px; margin-top: 20px; font-weight: 600;">Veículo não encontrado.</p>
-
             <% } %>
         </div>
     </div>
 
     <div id="modalLista" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(2px); justify-content:center; align-items:center; z-index: 100;">
-        <div style="background:white; width: 85%; max-width: 320px; border-radius: 16px; padding: 20px; max-height: 400px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                <h3 style="margin:0; font-size: 16px; color: #111;">Selecione o Veículo</h3>
-                <span onclick="document.getElementById('modalLista').style.display='none'" style="font-size:24px; cursor:pointer; color: #999;">&times;</span>
+        <div style="background:white; width: 85%; max-width: 320px; border-radius: 16px; padding: 20px; max-height: 400px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            
+            <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0; font-size: 16px; color: #111;">Selecione o Veículo</h3>
+                    <span onclick="fecharModal()" style="font-size:24px; cursor:pointer; color: #999;">&times;</span>
+                </div>
+                <button onclick="fecharModal()" style="background:none; border:none; padding:0; cursor:pointer; color:#0056b3; font-weight:600; font-size:13px; display:flex; align-items:center; gap:4px; margin-top: 5px;">
+                    <span>⬅</span> Voltar
+                </button>
             </div>
+
             <div id="listaVeiculos" style="overflow-y: auto;"></div>
         </div>
     </div>
 
     <script>
-        function limparChave(chave) {
-            return chave.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        }
-
-        function encontrarValor(obj, possiveisNomes) {
+        function limparChave(k) { return k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); }
+        
+        function encontrarValor(obj, nomes) {
             if (!obj) return null;
-            const dadosLimpos = {};
-            Object.keys(obj).forEach(key => { dadosLimpos[limparChave(key)] = obj[key]; });
-            for (let nome of possiveisNomes) {
-                const nomeLimpo = limparChave(nome);
-                if (dadosLimpos[nomeLimpo] !== undefined) return dadosLimpos[nomeLimpo];
-            }
+            const limpos = {};
+            Object.keys(obj).forEach(k => { limpos[limparChave(k)] = obj[k]; });
+            for (let n of nomes) { if (limpos[limparChave(n)] !== undefined) return limpos[limparChave(n)]; }
             return null;
         }
 
-        function obterMarcaLimpa(marcaSuja) {
-            if (!marcaSuja) return "TODOS";
-            const m = marcaSuja.toUpperCase();
-            if (m.includes("VOLKSWAGEN") || m.includes("VW")) return "VOLKSWAGEN";
-            if (m.includes("CHEVROLET") || m.includes("GM")) return "CHEVROLET";
-            if (m.includes("FIAT")) return "FIAT";
-            if (m.includes("FORD")) return "FORD";
-            if (m.includes("HONDA")) return "HONDA";
-            if (m.includes("TOYOTA")) return "TOYOTA";
-            if (m.includes("HYUNDAI")) return "HYUNDAI";
-            if (m.includes("RENAULT")) return "RENAULT";
+        function obterMarcaLimpa(m) {
+            if (!m) return "TODOS";
+            m = m.toUpperCase();
+            if (m.includes("VW") || m.includes("VOLKS")) return "VOLKSWAGEN";
+            if (m.includes("GM") || m.includes("CHEV")) return "CHEVROLET";
             if (m.includes("CITROEN")) return "CITROEN";
-            if (m.includes("PEUGEOT")) return "PEUGEOT";
-            if (m.includes("BMW")) return "BMW";
-            if (m.includes("JEEP")) return "JEEP";
-            if (m.includes("NISSAN")) return "NISSAN";
-            if (m.includes("MITSUBISHI")) return "MITSUBISHI";
-            if (m.includes("AUDI")) return "AUDI";
-            if (m.includes("KIA")) return "KIA";
-            if (m.includes("CHERY")) return "CAOA CHERY"; 
+            if (m.includes("CHERY")) return "CAOA CHERY";
             return m.split(' ')[0].replace(/[^A-Z]/g, '');
         }
 
         let cliques = 0;
         function cliqueSecreto() {
             cliques++;
-            if(cliques >= 5) { 
-                document.getElementById('link-reset').style.display = 'block'; 
-                document.getElementById('contador-secreto').innerText = "🔓"; 
-            }
+            if(cliques >= 5) { document.getElementById('link-reset').style.display = 'block'; document.getElementById('contador-secreto').innerText = "🔓"; }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalLista').style.display = 'none';
         }
 
         async function realizarBusca() {
@@ -241,32 +153,27 @@
             } catch (e) { alert("Erro de conexão"); }
         }
 
-        function preencherFicha(veiculo) {
+        function preencherFicha(v) {
             document.getElementById('tela-busca').style.display = 'none';
             document.getElementById('areaResultado').style.display = 'block';
-            document.getElementById('modalLista').style.display = 'none';
+            fecharModal();
 
-            const marca = encontrarValor(veiculo, ['marca', 'fabricante']) || 'Marca';
-            const modelo = encontrarValor(veiculo, ['modelo', 'veiculo', 'descriçao']) || 'Modelo';
-            const ano = encontrarValor(veiculo, ['ano', 'ano modelo']);
-            const cor = encontrarValor(veiculo, ['cor', 'color', 'cor do veiculo', 'pintura']);
-            const km = encontrarValor(veiculo, ['km', 'quilometragem', 'odometro']);
-            const portas = encontrarValor(veiculo, ['portas', 'qtd portas']);
-            const placa = encontrarValor(veiculo, ['placa']) || '---';
-            const loja = encontrarValor(veiculo, ['loja', 'localizacao', 'unidade']) || 'Matriz';
-            const valor = encontrarValor(veiculo, ['valor', 'preco', 'venda']) || 0;
-
+            const marca = encontrarValor(v, ['marca', 'fabricante']) || 'Marca';
+            const modelo = encontrarValor(v, ['modelo', 'veiculo']) || 'Modelo';
+            const ano = encontrarValor(v, ['ano', 'ano modelo']) || '--';
+            const placa = encontrarValor(v, ['placa']) || '---';
+            let valor = v['valor_tratado'];
+            if(!valor) valor = encontrarValor(v, ['valor', 'preco', 'venda']) || 0;
+            
             document.getElementById('resModelo').innerText = modelo;
             document.getElementById('resMarca').innerText = marca;
-            document.getElementById('resAno').innerText = ano || '--';
-            document.getElementById('resCor').innerText = cor || 'Não inf.';
-            document.getElementById('resKm').innerText = km ? km + ' km' : 'Não inf.';
-            document.getElementById('resPortas').innerText = portas || '--';
+            document.getElementById('resAno').innerText = ano;
+            document.getElementById('resCor').innerText = encontrarValor(v, ['cor', 'pintura']) || '--';
+            document.getElementById('resKm').innerText = encontrarValor(v, ['km', 'odometro']) || '--';
+            document.getElementById('resPortas').innerText = encontrarValor(v, ['portas']) || '--';
             document.getElementById('resPlaca').innerText = placa;
-            document.getElementById('resLoja').innerText = loja;
-            
-            const valorNum = parseFloat(valor);
-            document.getElementById('resValor').innerText = valorNum.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+            document.getElementById('resLoja').innerText = encontrarValor(v, ['loja', 'unidade']) || 'Matriz';
+            document.getElementById('resValor').innerText = parseFloat(valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
             const marcaLimpa = obterMarcaLimpa(marca);
             document.getElementById('btnVerSite').href = `https://www.dsmultimarcas.com.br/estoque?Marcas=${encodeURIComponent(marcaLimpa)}`;
@@ -277,25 +184,27 @@
             const listaEl = document.getElementById('listaVeiculos');
             listaEl.innerHTML = '';
             lista.forEach(v => {
-                const modelo = encontrarValor(v, ['modelo']);
-                const placa = encontrarValor(v, ['placa']);
-                const ano = encontrarValor(v, ['ano', 'ano modelo']) || ''; // Pega o ano
+                const modelo = encontrarValor(v, ['modelo', 'veiculo']) || 'Modelo';
+                const placa = encontrarValor(v, ['placa']) || '';
+                const ano = encontrarValor(v, ['ano', 'ano modelo']) || '';
+                let valor = v['valor_tratado'];
+                if(!valor) valor = parseFloat(encontrarValor(v, ['valor', 'preco']) || 0);
+                const valorFmt = valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
                 const div = document.createElement('div');
                 div.style.padding = "12px";
                 div.style.borderBottom = "1px solid #f3f4f6";
                 div.style.cursor = "pointer";
-                
-                // --- AQUI ESTÁ A MUDANÇA ---
-                // Adicionamos o ano em Azul e Negrito ao lado do modelo
                 div.innerHTML = `
                     <div style="font-size: 15px; margin-bottom: 4px;">
                         <b style="color:#111">${modelo}</b> 
                         <b style="color:#0056b3; margin-left: 6px;">${ano}</b>
                     </div>
-                    <span style='font-size:12px; color:#6b7280; font-weight:500;'>${placa}</span>
+                    <div style="display:flex; justify-content:space-between; width:100%">
+                        <span style='font-size:12px; color:#6b7280; font-weight:500;'>${placa}</span>
+                        <span style='font-size:13px; color:#c0392b; font-weight:700;'>${valorFmt}</span>
+                    </div>
                 `;
-                
                 div.onclick = () => preencherFicha(v);
                 listaEl.appendChild(div);
             });

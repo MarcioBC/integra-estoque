@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const xlsx = require('xlsx');
 const fs = require('fs');
+const https = require('https');
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -10,30 +11,63 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 
+// --- SISTEMA ANTI-SONO COM HORÁRIO COMERCIAL (07:50 às 18:00) ---
+// ⚠️ COLOQUE SEU LINK ABAIXO:
+const MINHA_URL = 'https://SEU-SITE-AQUI.onrender.com'; 
+
+if (MINHA_URL.includes('onrender.com')) {
+    console.log(`⏰ Sistema de Horário Comercial configurado para: ${MINHA_URL}`);
+    
+    setInterval(() => {
+        // Pega a hora certa no Brasil (São Paulo)
+        const agora = new Date();
+        const dataBR = new Date(agora.toLocaleString("en-US", {timeZone: "America/Sao_Paulo"}));
+        
+        const hora = dataBR.getHours();
+        const minutos = dataBR.getMinutes();
+        
+        // Transforma tudo em minutos para facilitar a conta
+        // Ex: 07:50 = (7 * 60) + 50 = 470 minutos
+        const tempoAtual = (hora * 60) + minutos;
+        const inicioDia = (7 * 60) + 50; // 07:50
+        const fimDia = (18 * 60);        // 18:00
+
+        // Lógica: Só pinga se estiver dentro do horário
+        if (tempoAtual >= inicioDia && tempoAtual < fimDia) {
+            console.log(`[${hora}:${minutos}] ☀️ Dia de trabalho! Mantendo site acordado...`);
+            https.get(MINHA_URL, (res) => {
+                // Ping silencioso, apenas para manter ativo
+            }).on('error', (e) => {
+                console.error(`Erro no ping: ${e.message}`);
+            });
+        } else {
+            console.log(`[${hora}:${minutos}] 🌙 Fora do expediente. Deixando o sistema dormir.`);
+        }
+
+    }, 10 * 60 * 1000); // Verifica a cada 10 minutos
+}
+// -------------------------------------------------------------
+
 // Armazenamento em memória
 let dadosPlanilha = [];
 let dadosCarregados = false;
 
-// --- FUNÇÃO AUXILIAR: LIMPA O TEXTO ---
 function limparChave(chave) {
     if(!chave) return "";
     return chave.toString().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// --- FUNÇÃO AUXILIAR: CONVERTE DINHEIRO PARA NÚMERO ---
 function tratarValorDinheiro(valorBruto) {
     if (!valorBruto) return 0;
     if (typeof valorBruto === 'number') return valorBruto;
 
     let v = valorBruto.toString();
-    // Remove R$ e espaços
     v = v.replace("R$", "").trim();
     
-    // Lógica para detectar se é 30.000,00 ou 30000
     if (v.includes(',') && v.includes('.')) {
-        v = v.replace(/\./g, '').replace(',', '.'); // Padrao BR: Tira ponto milhar, mantem virgula decimal
+        v = v.replace(/\./g, '').replace(',', '.'); 
     } else if (v.includes(',')) {
-        v = v.replace(',', '.'); // Apenas decimal
+        v = v.replace(',', '.'); 
     }
     
     return parseFloat(v) || 0;
@@ -62,15 +96,13 @@ app.post('/upload', upload.single('planilha'), (req, res) => {
             const newRow = {};
             const colunasLimpas = {};
             
-            // 1. Limpa nomes das colunas
             Object.keys(row).forEach(key => {
                 const keyLimpa = limparChave(key);
                 colunasLimpas[keyLimpa] = row[key];
-                newRow[keyLimpa] = row[key]; // Salva limpo
-                newRow[key] = row[key];      // Salva original
+                newRow[keyLimpa] = row[key];
+                newRow[key] = row[key];
             });
 
-            // 2. DETETIVE DE PREÇO: Procura a coluna certa
             let valorEncontrado = 0;
             const possiveisNomes = ['valor', 'preco', 'venda', 'vlr', 'total', 'anuncio'];
             
@@ -94,21 +126,18 @@ app.post('/upload', upload.single('planilha'), (req, res) => {
     }
 });
 
-// --- BUSCA INTELIGENTE (FILTRO DE FAIXA + ORDENAÇÃO) ---
 app.post('/buscar', (req, res) => {
     const termoOriginal = req.body.termo || '';
     const termo = termoOriginal.toLowerCase().trim();
     
-    // Verifica se é busca numérica (Filtro de Preço)
     const termoNumerico = parseFloat(termo.replace(/[^0-9]/g, ''));
     const isNumero = !isNaN(termoNumerico) && termo.match(/\d/) && !termo.match(/[a-z]/);
 
     let resultados = [];
 
     if (isNumero && termoNumerico > 0) {
-        // Lógica de Faixas
         let base = termoNumerico;
-        if (base < 100) base = base * 1000; // Se digitou "30", vira "30000"
+        if (base < 100) base = base * 1000;
 
         let milharBase = Math.floor(base / 10000) * 10000; 
         let min = 0, max = 0;
@@ -128,7 +157,6 @@ app.post('/buscar', (req, res) => {
         });
 
     } else {
-        // Busca Texto (Placa, Modelo)
         resultados = dadosPlanilha.filter(item => {
             return Object.values(item).some(val => 
                 String(val).toLowerCase().includes(termo)
@@ -136,8 +164,6 @@ app.post('/buscar', (req, res) => {
         });
     }
 
-    // --- ORDENAÇÃO MÁGICA AQUI ---
-    // Organiza do MENOR preço para o MAIOR preço
     resultados.sort((a, b) => {
         return (a.valor_tratado || 0) - (b.valor_tratado || 0);
     });
